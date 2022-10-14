@@ -20,6 +20,7 @@ parser.add_argument("--test_size", default=0.5, type=lambda x: int(x) if x.isdig
 def main(args: argparse.Namespace) -> tuple[np.ndarray, np.ndarray]:
     dataset = getattr(sklearn.datasets, "load_{}".format(args.dataset))()
 
+
     # TODO: Split the dataset into a train set and a test set.
     # Use `sklearn.model_selection.train_test_split` method call, passing
     # arguments `test_size=args.test_size, random_state=args.seed`.
@@ -58,8 +59,10 @@ def main(args: argparse.Namespace) -> tuple[np.ndarray, np.ndarray]:
     # TODO: Fit the feature processing steps on the training data.
     # Then transform the training data into `train_data` (you can do both these
     # steps using `fit_transform`), and transform testing data to `test_data`.
+    
     train_data = pipeline.fit_transform(train_data)
-    test_data = pipeline.fit(test_data)
+    test_data = pipeline.transform(test_data)
+    
 
     return train_data[:5], test_data[:5]
 
