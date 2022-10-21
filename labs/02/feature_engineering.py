@@ -43,6 +43,7 @@ def main(args: argparse.Namespace) -> tuple[np.ndarray, np.ndarray]:
     # and then the real-valued features. To process different dataset columns
     # differently, you can use `sklearn.compose.ColumnTransformer`.
     col_int = np.all(train_data.astype(int) == train_data, axis=0)
+    print(col_int)
     transformer = sklearn.compose.ColumnTransformer([("Cat", sklearn.preprocessing.OneHotEncoder(sparse=False, handle_unknown="ignore"), col_int), ("Std", sklearn.preprocessing.StandardScaler(), ~col_int)])
 
     # TODO: To the current features, append polynomial features of order 2.
