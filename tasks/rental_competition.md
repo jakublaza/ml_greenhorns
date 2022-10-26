@@ -2,8 +2,8 @@
 #### Date: Deadline: Oct 24, 7:59 a.m.
 #### Points: 3 points+4 bonus
 
-This assignment is a [competition task](https://ufal.mff.cuni.cz/courses/npfl129/2223-winter#competitions). Your goal
-is to perform regression on the data from a rental shop.
+This assignment is a [competition task](https://ufal.mff.cuni.cz/courses/npfl129/2223-winter#competitions).
+Your goal is to perform regression on the data from a bike rental shop.
 The train set contains 1000 instances, each instance consists of 12 features,
 both integral and real.
 
@@ -14,5 +14,5 @@ prediction.
 
 The performance of your system is measured using _root mean squared error_
 and your goal is to achieve RMSE less than 100. Note that you can use
-any number of **generalized linear models** with any regularization to solve
+any number of **generalized linear models from sklearn** to solve
 this assignment (but no decision trees, MLPs, …).
