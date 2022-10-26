@@ -120,8 +120,8 @@ def main(args: argparse.Namespace) -> Optional[npt.ArrayLike]:
         # Use the model and return test set predictions, either as a Python list or a NumPy array.
         test = Dataset(args.predict)
 
-        alpha = np.ones((len(test.data), 1))
-        test.data = np.concatenate((test.data, alpha), axis=1) 
+        #alpha = np.ones((len(test.data), 1))
+        #test.data = np.concatenate((test.data, alpha), axis=1) 
 
         test1, test12 = pipeline(test.data, test.data, 1)
         test2, test22 =  pipeline(test.data, test.data, 2)
@@ -149,11 +149,13 @@ def main(args: argparse.Namespace) -> Optional[npt.ArrayLike]:
         pred1 = model1.predict(test12)
         pred2 = model2.predict(test22)
         pred3 = model3.predict(test33)
+       
 
-        #rmse1 = sklearn.metrics.mean_squared_error(test.target, pred1, squared=False)
-        #rmse2 = sklearn.metrics.mean_squared_error(test.target, pred2, squared=False)
-        #rmse3 = sklearn.metrics.mean_squared_error(test.target, pred3, squared=False)
+        rmse1 = sklearn.metrics.mean_squared_error(test.target, pred1, squared=False)
+        rmse2 = sklearn.metrics.mean_squared_error(test.target, pred2, squared=False)
+        rmse3 = sklearn.metrics.mean_squared_error(test.target, pred3, squared=False)
 
+        print(rmse1, rmse2, rmse3)
         #best_rmse = min(rmse1, rmse2, rmse3)
         #print(best_rmse)
         #if best_rmse == rmse1:
