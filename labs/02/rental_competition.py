@@ -163,6 +163,7 @@ def main(args: argparse.Namespace) -> Optional[npt.ArrayLike]:
             #return pred2
         #else:
             #return pred3
+        print(rmse2, rmse1)
         return pred3
 
 

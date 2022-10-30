@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import argparse
-
+import sys
 import numpy as np
 import sklearn.datasets
 import sklearn.metrics
@@ -18,7 +18,8 @@ parser.add_argument("--seed", default=42, type=int, help="Random seed")
 parser.add_argument("--test_size", default=0.5, type=lambda x: int(x) if x.isdigit() else float(x), help="Test size")
 # If you add more arguments, ReCodEx will keep them with your default values.
 
-
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
 def main(args: argparse.Namespace) -> tuple[np.ndarray, list[tuple[float, float]]]:
     # Create a random generator with a given seed
     generator = np.random.RandomState(args.seed)
@@ -29,15 +30,27 @@ def main(args: argparse.Namespace) -> tuple[np.ndarray, list[tuple[float, float]
 
     # TODO: Append a constant feature with value 1 to the end of every input data
 
+    alpha = np.ones((len(data), 1))
+    data = np.concatenate((data, alpha), axis=1) 
+    
     # TODO: Split the dataset into a train set and a test set.
     # Use `sklearn.model_selection.train_test_split` method call, passing
     # arguments `test_size=args.test_size, random_state=args.seed`.
 
+    train_data, test_data, train_target, test_target = sklearn.model_selection.train_test_split(data, target, test_size=args.test_size, random_state=args.seed)
+    
     # Generate initial logistic regression weights
+    
     weights = generator.uniform(size=train_data.shape[1], low=-0.1, high=0.1)
 
     for epoch in range(args.epochs):
         permutation = generator.permutation(train_data.shape[0])
+
+        for i in range(train_data.shape[0] // args.batch_size):
+            data_b = train_data[permutation[i * args.batch_size : (i + 1) * args.batch_size]]
+            target_b = train_target[permutation[i * args.batch_size : (i + 1) * args.batch_size]]
+            gradient = 1/abs(args.batch_size)*((1 / (1 + np.exp(-(data_b @ weights)))) - target_b) @ data_b
+            weights = weights - args.learning_rate * gradient
 
         # TODO: Process the data in the order of `permutation`. For every
         # `args.batch_size` of them, average their gradient, and update the weights.
@@ -46,7 +59,14 @@ def main(args: argparse.Namespace) -> tuple[np.ndarray, list[tuple[float, float]
         # TODO: After the SGD epoch, measure the average loss and accuracy for both the
         # train set and the test set. The loss is the average MLE loss (i.e., the
         # negative log likelihood, or crossentropy loss, or KL loss) per example.
-        train_accuracy, train_loss, test_accuracy, test_loss = ...
+        print(weights)
+        pred_train = 1 / (1 + np.exp(-(train_data @ weights)))
+        pred_test = 1 / (1 + np.exp(-(test_data @ weights)))
+        train_accuracy = sklearn.metrics.accuracy_score(train_target, pred_train>1/2)
+        train_loss = sklearn.metrics.log_loss(train_target, pred_train)
+        test_accuracy = sklearn.metrics.accuracy_score(test_target, pred_test>1/2)
+        test_loss = sklearn.metrics.log_loss(test_target, pred_test)
+        
 
         print("After epoch {}: train loss {:.4f} acc {:.1f}%, test loss {:.4f} acc {:.1f}%".format(
             epoch + 1, train_loss, 100 * train_accuracy, test_loss, 100 * test_accuracy))
