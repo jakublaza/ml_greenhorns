@@ -66,6 +66,7 @@ def main(args: argparse.Namespace) -> tuple[np.ndarray, list[tuple[float, float]
         train_loss = sklearn.metrics.log_loss(train_target, pred_train)
         test_accuracy = sklearn.metrics.accuracy_score(test_target, pred_test>1/2)
         test_loss = sklearn.metrics.log_loss(test_target, pred_test)
+        #asda
         
 
         print("After epoch {}: train loss {:.4f} acc {:.1f}%, test loss {:.4f} acc {:.1f}%".format(
