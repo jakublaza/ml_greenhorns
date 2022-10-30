@@ -25,8 +25,7 @@ def main(args: argparse.Namespace) -> np.ndarray:
 
     # TODO: Append a constant feature with value 1 to the end of every input data
     
-    alpha = np.ones((len(data), 1))
-    data = np.concatenate((data, alpha), axis=1) 
+    data = np.append(data, np.ones((data.shape[0], 1)), axis=1)
 
     # Generate initial perceptron weights
     weights = np.zeros(data.shape[1])
@@ -38,7 +37,7 @@ def main(args: argparse.Namespace) -> np.ndarray:
         
 
         for x, t in zip(data[permutation], target[permutation]):
-            y = np.matmul(np.transpose(x), weights)
+            y = np.matmul(np.transpose(weights), x)
             #print(y.shape)
             b = t*y
             if t*y <= 0:
@@ -47,8 +46,9 @@ def main(args: argparse.Namespace) -> np.ndarray:
             else:
                 continue
 
-        if np.matmul(np.matmul(target, data), weights) > 0:
-            done = True
+        done = np.all(target*np.matmul(data, weights)>0) 
+
+    #
 
         # TODO: Implement the perceptron algorithm, notably one iteration
         # over the training data in the order of `permutation`. During the
