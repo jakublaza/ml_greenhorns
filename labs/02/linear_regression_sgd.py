@@ -28,13 +28,17 @@ def main(args: argparse.Namespace) -> tuple[list[float], float, float]:
     # Generate an artificial regression dataset
     data, target = sklearn.datasets.make_regression(n_samples=args.data_size, random_state=args.seed)
 
-    # TODO: Append a constant feature with value 1 to the end of every input data.
-    # Then we do not need to explicitly represent bias - it becomes the last weight.
+
+    # TODO: Append a constant feature with value 1 to the end of every input data
+    data = np.append(data, np.ones([data.shape[0], 1]), axis=1)
+    #alpha = np.ones((len(data), 1))
+    #data = np.concatenate((data, alpha), axis=1)    
+
 
     # TODO: Split the dataset into a train set and a test set.
     # Use `sklearn.model_selection.train_test_split` method call, passing
     # arguments `test_size=args.test_size, random_state=args.seed`.
-    train_data, test_data, train_target, test_target = ...
+    train_data, test_data, train_target, test_target = sklearn.model_selection.train_test_split(data, target, test_size=args.test_size, random_state=args.seed)
 
     # Generate initial linear regression weights
     weights = generator.uniform(size=train_data.shape[1], low=-0.1, high=0.1)
@@ -42,6 +46,12 @@ def main(args: argparse.Namespace) -> tuple[list[float], float, float]:
     train_rmses, test_rmses = [], []
     for epoch in range(args.epochs):
         permutation = generator.permutation(train_data.shape[0])
+
+        for i in range(train_data.shape[0] // args.batch_size):
+            data_b = train_data[permutation[i * args.batch_size : (i + 1) * args.batch_size]]
+            target_b = train_target[permutation[i * args.batch_size : (i + 1) * args.batch_size]]
+            gradient = 1/abs(args.batch_size)*(np.matmul((np.matmul(data_b, weights) - target_b), data_b))
+            weights = weights - args.learning_rate * (gradient + args.l2 * weights)
 
         # TODO: Process the data in the order of `permutation`. For every
         # `args.batch_size` of them, average their gradient, and update the weights.
@@ -54,11 +64,22 @@ def main(args: argparse.Namespace) -> tuple[list[float], float, float]:
         # and the SGD update is
         #   weights = weights - args.learning_rate * gradient
 
-        # TODO: Append current RMSE on train/test to `train_rmses`/`test_rmses`.
 
+        # TODO: Append current RMSE on train/test to `train_rmses`/`test_rmses`.
+        pred_tr = np.zeros(len(train_data))
+        for i in range(len(train_data)):
+            pred_tr[i] = sum(weights*train_data[i])
+
+        pred_te = np.zeros(len(test_data))
+        for i in range(len(test_data)):
+            pred_te[i] = sum(weights*test_data[i])
+
+        train_rmses.append(np.sqrt((sum((pred_tr-train_target)**2))/len(pred_tr)))
+        test_rmses.append(np.sqrt((sum((pred_te-test_target)**2))/len(pred_te)))
     # TODO: Compute into `explicit_rmse` test data RMSE when fitting
     # `sklearn.linear_model.LinearRegression` on `train_data` (ignoring `args.l2`).
-    explicit_rmse = ...
+    explicit_prediction = sklearn.linear_model.LinearRegression().fit(train_data, train_target).predict(test_data)
+    explicit_rmse = sklearn.metrics.mean_squared_error(explicit_prediction, test_target, squared=False)
 
     if args.plot:
         import matplotlib.pyplot as plt

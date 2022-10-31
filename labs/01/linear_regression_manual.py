@@ -22,20 +22,21 @@ def main(args: argparse.Namespace) -> float:
     # If you want to learn about the dataset, you can print some information
     # about it using `print(dataset.DESCR)`.
 
-    # TODO: Append a constant feature with value 1 to the end of every input data.
-    # Then we do not need to explicitly represent bias - it becomes the last weight.
 
-    # TODO: Split the dataset into a train set and a test set.
-    # Use `sklearn.model_selection.train_test_split` method call, passing
-    # arguments `test_size=args.test_size, random_state=args.seed`.
+    alpha = np.ones((len(dataset.data), 1))
+    dataset.data = np.concatenate((dataset.data, alpha), axis=1)    
 
-    # TODO: Solve the linear regression using the algorithm from the lecture,
-    # explicitly computing the matrix inverse (using `np.linalg.inv`).
 
-    # TODO: Predict target values on the test set.
+    X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(dataset.data, dataset.target, test_size=args.test_size, random_state=args.seed)
+
+    betas = np.matmul(np.linalg.inv(np.matmul(np.transpose(X_train), X_train)), np.matmul(np.transpose(X_train), y_train))
+
+    pred = np.zeros(len(X_test))
+    for i in range(len(X_test)):
+        pred[i] = sum(betas*X_test[i])
 
     # TODO: Manually compute root mean square error on the test set predictions.
-    rmse = ...
+    rmse = np.sqrt((sum((pred-y_test)**2))/len(pred))
 
     return rmse
 

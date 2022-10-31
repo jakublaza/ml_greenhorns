@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# 4c2f5d6e-10bb-4eaa-baa5-09d6adfa7ffa
+# e20c7b3d-4d2c-4b16-8971-110bcf9fbeab
+# 7e271e04-8848-11e7-a75c-005056020108
+
 import argparse
 import lzma
 import os
@@ -6,6 +10,15 @@ import pickle
 import sys
 from typing import Optional
 import urllib.request
+import sklearn.compose
+import sklearn.datasets
+import sklearn.model_selection
+import sklearn.pipeline
+import sklearn.preprocessing
+import sklearn.linear_model
+import sklearn.metrics
+import sklearn.decomposition
+
 
 import numpy as np
 import numpy.typing as npt
@@ -48,10 +61,22 @@ def main(args: argparse.Namespace) -> Optional[npt.ArrayLike]:
     if args.predict is None:
         # We are training a model.
         np.random.seed(args.seed)
-        train = Dataset()
+        dataset = Dataset()
 
         # TODO: Train a model on the given dataset and store it in `model`.
-        model = ...
+        
+        
+        col_int = np.all(dataset.data.astype(int) == dataset.data, axis=0)
+        transformer = sklearn.compose.ColumnTransformer([("Cat", sklearn.preprocessing.OneHotEncoder(sparse=False, handle_unknown="ignore"), col_int), ("Std", sklearn.preprocessing.StandardScaler(), ~col_int)])
+        polynomial = sklearn.preprocessing.PolynomialFeatures(include_bias=False)
+        pca = sklearn.decomposition.PCA()
+        model = sklearn.linear_model.LogisticRegression(random_state=args.seed)
+        pipeline = sklearn.pipeline.Pipeline([("transformer", transformer), ("polynomial", polynomial), ('pca', pca), ('logistic reg', model)])    
+        
+        CV = sklearn.model_selection.GridSearchCV(pipeline, {'polynomial__degree':[2, 3], 'logistic reg__C':[500, 700, 1000], "pca__n_components": [550, 650]}, 
+                                     refit = True)
+        
+        model = CV.fit(dataset.data, dataset.target)
 
         # Serialize the model.
         with lzma.open(args.model_path, "wb") as model_file:
@@ -64,8 +89,9 @@ def main(args: argparse.Namespace) -> Optional[npt.ArrayLike]:
         with lzma.open(args.model_path, "rb") as model_file:
             model = pickle.load(model_file)
 
-        # TODO: Generate `predictions` with the test set predictions.
-        predictions = ...
+
+        predictions = model.predict(test.data)
+
 
         return predictions
 
