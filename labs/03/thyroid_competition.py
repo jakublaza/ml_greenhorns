@@ -73,7 +73,7 @@ def main(args: argparse.Namespace) -> Optional[npt.ArrayLike]:
         model = sklearn.linear_model.LogisticRegression(random_state=args.seed)
         pipeline = sklearn.pipeline.Pipeline([("transformer", transformer), ("polynomial", polynomial), ('pca', pca), ('logistic reg', model)])    
         
-        CV = sklearn.model_selection.GridSearchCV(pipeline, {'polynomial__degree':[3], 'logistic reg__C':[700], "pca__n_components": [550]}, 
+        CV = sklearn.model_selection.GridSearchCV(pipeline, {'polynomial__degree':[2, 3], 'logistic reg__C':[500, 700, 1000], "pca__n_components": [550, 650]}, 
                                      refit = True)
         
         model = CV.fit(dataset.data, dataset.target)
