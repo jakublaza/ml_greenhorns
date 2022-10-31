@@ -28,10 +28,12 @@ def main(args: argparse.Namespace) -> tuple[list[float], float, float]:
     # Generate an artificial regression dataset
     data, target = sklearn.datasets.make_regression(n_samples=args.data_size, random_state=args.seed)
 
+
     # TODO: Append a constant feature with value 1 to the end of every input data
     data = np.append(data, np.ones([data.shape[0], 1]), axis=1)
     #alpha = np.ones((len(data), 1))
     #data = np.concatenate((data, alpha), axis=1)    
+
 
     # TODO: Split the dataset into a train set and a test set.
     # Use `sklearn.model_selection.train_test_split` method call, passing

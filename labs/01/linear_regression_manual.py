@@ -22,8 +22,10 @@ def main(args: argparse.Namespace) -> float:
     # If you want to learn about the dataset, you can print some information
     # about it using `print(dataset.DESCR)`.
 
+
     alpha = np.ones((len(dataset.data), 1))
     dataset.data = np.concatenate((dataset.data, alpha), axis=1)    
+
 
     X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(dataset.data, dataset.target, test_size=args.test_size, random_state=args.seed)
 

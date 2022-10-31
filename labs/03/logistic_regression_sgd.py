@@ -28,7 +28,8 @@ def main(args: argparse.Namespace) -> tuple[np.ndarray, list[tuple[float, float]
     data, target = sklearn.datasets.make_classification(
         n_samples=args.data_size, n_features=2, n_informative=2, n_redundant=0, random_state=args.seed)
 
-    # TODO: Append a constant feature with value 1 to the end of every input data
+    # TODO: Append a constant feature with value 1 to the end of every input data.
+    # Then we do not need to explicitly represent bias - it becomes the last weight.
 
     alpha = np.ones((len(data), 1))
     data = np.concatenate((data, alpha), axis=1) 
