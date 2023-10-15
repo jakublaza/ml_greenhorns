@@ -1,5 +1,7 @@
 # Machine Learning for Greenhorns – ÚFAL Course NPFL129
 
+Solutions to HA in solution branch
+
 This repository contains materials to the
 [Machine Learning for Greenhorns (ÚFAL course NPFL129)](http://ufal.mff.cuni.cz/courses/npfl129).
 
